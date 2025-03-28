@@ -59,4 +59,9 @@ public class Komunikacija {
        }
        return null;
     }
+
+    public Socket getS() {
+        return s;
+    }
+    
 }

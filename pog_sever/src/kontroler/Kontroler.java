@@ -4,6 +4,7 @@
  */
 package kontroler;
 
+import forme.GlavnaForma;
 import java.util.LinkedList;
 import java.util.List;
 import model.Admin;
@@ -14,6 +15,7 @@ import model.Broj;
  * @author USER
  */
 public class Kontroler {
+    private GlavnaForma gf;
     private List<Admin> administratori;
     private Admin ulogovan;
     private List<Broj> pozicije;
@@ -50,6 +52,14 @@ public class Kontroler {
 
     public void setPozicije(List<Broj> pozicije) {
         this.pozicije = pozicije;
+    }
+
+    public GlavnaForma getGf() {
+        return gf;
+    }
+
+    public void setGf(GlavnaForma gf) {
+        this.gf = gf;
     }
      
 }

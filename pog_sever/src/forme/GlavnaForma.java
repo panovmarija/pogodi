@@ -20,10 +20,13 @@ public class GlavnaForma extends javax.swing.JFrame {
      * Creates new form GlavnaForam
      */
     private List<Broj> lista;
+    private PokreniServer p;
     public GlavnaForma() {
         initComponents();
         jLabel1.setText("dobordosao, "+kontroler.Kontroler.getInstance().getUlogovan());
         lista=new LinkedList<>();
+        kontroler.Kontroler.getInstance().setGf(this);
+        p=new PokreniServer( );
     }
 
     /**
@@ -149,8 +152,7 @@ public class GlavnaForma extends javax.swing.JFrame {
          kontroler.Kontroler.getInstance().setPozicije(lista);
          jButton1.setEnabled(false);
 //         je l to ovde?
-         PokreniServer p=new PokreniServer();
-         p.start();
+         if(!p.isAlive()) p.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -163,4 +165,13 @@ public class GlavnaForma extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
+
+    public void novaIgra() {
+        jButton1.setEnabled(true);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                jTable1.setValueAt(null, i, j);
+            }
+        }
+    }
 }

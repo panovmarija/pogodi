@@ -4,8 +4,14 @@
  */
 package forme;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import model.Broj;
 import transfer.KlijentZahtev;
 import transfer.ServerOdg;
@@ -110,26 +116,49 @@ public class Pogodi extends javax.swing.JFrame {
 //        ako je tacno pogodjeno
         if(b.getBroj()>0) 
             brpog++;
-//        ako nije tacno pogodjeno i poslednji je pokusaj
-        else {
-            if(brpok==5)
-            {JOptionPane.showMessageDialog(this, "izgubio si");
-            KlijentZahtev kz=new KlijentZahtev(operacije.Operacije.prikazi_pozicije, "");
-            komunikacija.Komunikacija.getInstance().posaljiZahtev(kz);
-            ServerOdg so2=komunikacija.Komunikacija.getInstance().vratiOdg();
-            prikazipozicije(so2.getOdg());
-            this.dispose();
-            return ;
-            }
-        }
+        
         if(brpog==3)
         {   KlijentZahtev kz=new KlijentZahtev(operacije.Operacije.vrati_sifru_klijentu, "");
             komunikacija.Komunikacija.getInstance().posaljiZahtev(kz);
             ServerOdg so1=komunikacija.Komunikacija.getInstance().vratiOdg();
             int sifra=(int) so1.getOdg();
             JOptionPane.showMessageDialog(this, "sifra je "+sifra);
+            komunikacija.Komunikacija.getInstance().posaljiZahtev(new KlijentZahtev(operacije.Operacije.nova_igra, null));
+//          normalno zatvaranje veze
+            try {
+                komunikacija.Komunikacija.getInstance().getS().close();
+            } catch (IOException ex) {
+                Logger.getLogger(Pogodi.class.getName()).log(Level.SEVERE, null, ex);
+            }
             this.dispose();
+            return;
         }
+//        ako nije tacno pogodjeno i poslednji je pokusaj
+            if(brpok==5)
+            {
+            KlijentZahtev kz=new KlijentZahtev(operacije.Operacije.prikazi_pozicije, "");
+            komunikacija.Komunikacija.getInstance().posaljiZahtev(kz);
+            ServerOdg so2=komunikacija.Komunikacija.getInstance().vratiOdg();
+            prikazipozicije(so2.getOdg());
+            komunikacija.Komunikacija.getInstance().posaljiZahtev(new KlijentZahtev(operacije.Operacije.nova_igra, null));
+            Timer t=new Timer(2000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JOptionPane.showMessageDialog(null, "izgubio si");
+                    dispose();
+                }
+            });
+            t.setRepeats(false);
+            t.start();
+
+//          zatvaranje veze
+            try {
+                    komunikacija.Komunikacija.getInstance().getS().close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Pogodi.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
     }//GEN-LAST:event_jTable1MousePressed
 
     /**

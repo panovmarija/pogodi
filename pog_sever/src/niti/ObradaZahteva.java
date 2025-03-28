@@ -30,6 +30,12 @@ public class ObradaZahteva extends Thread {
         while(true)
         {
             KlijentZahtev kz=procitajZahtev();
+            if(kz==null)
+            {   
+//                System.out.println(s==null);
+//                System.out.println(s.isClosed());
+                break;
+            }
             ServerOdg so=new ServerOdg();
             switch (kz.getOperacija()) {
                 case operacije.Operacije.klijent_pogadja:
@@ -57,28 +63,40 @@ public class ObradaZahteva extends Thread {
                 case operacije.Operacije.prikazi_pozicije:
                     so.setOdg(kontroler.Kontroler.getInstance().getPozicije());
                     break;
+                case operacije.Operacije.nova_igra:
+                    kontroler.Kontroler.getInstance().getGf().novaIgra();
+                    break;
                 default:
                     throw new AssertionError();
             }
             posaljiOdgovor(so);
             System.out.println("poslat odg klijentu");
         }
+        
+        System.out.println("gotov klijent");
+     try {
+//         System.out.println(s.isClosed());
+         if(s!=null && !s.isClosed())
+         s.close();
+         
+     } catch (IOException ex) {
+         Logger.getLogger(ObradaZahteva.class.getName()).log(Level.SEVERE, null, ex);
+     }
+        System.out.println(s.isClosed());
+        
     }
 
     private KlijentZahtev procitajZahtev() {
      try {
          ObjectInputStream ois=new ObjectInputStream(s.getInputStream());
-         try {
-             return (KlijentZahtev) ois.readObject();
-         } catch (ClassNotFoundException ex) {
-             Logger.getLogger(ObradaZahteva.class.getName()).log(Level.SEVERE, null, ex);
-         }
+         return (KlijentZahtev) ois.readObject();
      } catch (IOException ex) {
+            System.out.println("klijent odvezan/nema zahteva");
+     } catch (ClassNotFoundException ex) {
          Logger.getLogger(ObradaZahteva.class.getName()).log(Level.SEVERE, null, ex);
      }
-        
-        return null;
-    }
+     return null;
+     }
 
     private void posaljiOdgovor(ServerOdg so) {
      try {
